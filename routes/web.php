@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\SecondController;
 use App\Http\Controllers\Front\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -30,11 +31,10 @@ Route::get('/showString/{id?}', function () {
 
 /* from controllers => Front folder*/
 Route::namespace('Front')->group(function () {
-
     /* all route only access controller or methods in folder name Front */
-    Route::get('Users', [UserController::class, 'showAdminName']);
+    Route::get('FUsers', [UserController::class, 'showAdminName']);
 
-    Route::get('view', [UserController::class, 'getView']);
+    Route::get('Fview', [UserController::class, 'getView']);
 
 });
 /* prefix => P*/
@@ -62,12 +62,49 @@ Route::get('check', function () {
 
 /* best practice */
 Route::group(['prefix' => 'users_auth', 'middleware' => 'auth'], function () {
-
     Route::get('Gshow', [UserController::class, 'showAdminName']);
     Route::get('Gedit', [UserController::class, 'EditAdminName']);
     Route::delete('Gdelete', [UserController::class, 'DeleteAdminName']);
     Route::put('Gupdate', [UserController::class, 'UpdateAdminName']);
+});
+////////////////////////////////////////////////////////////////////////////////////////////
+//way => 1
+Route::get('second', [SecondController::class, 'showString0']);
+//way => 2
+Route::namespace('Admin')->group(function () {
+    Route::get('second', [SecondController::class, 'showString0']);
+});
+// way => 3
+Route::group(['prefix' => 'admin'], function () {
+    Route::get('second', [SecondController::class, 'showString0']);
+});
+/////////////////////////////////////////////////////////////////////////////////////////////
 
+
+////////////////////////////////////////Middleware/////////////////////////////////////////////
+//way => 1
+Route::get('check', function () {
+    return 'middleware';
+})->middleware('auth');
+
+//way => 2 - best practice
+Route::group(['prefix' => 'users_auth', 'middleware' => 'auth'], function () {
+    Route::get('Gshow', [UserController::class, 'showAdminName']);
 });
 
 
+/*in __construct*/
+Route::group(['prefix' => 'admin'], function () {
+    Route::get('second0', [SecondController::class, 'showString0']);
+    Route::get('second1', [SecondController::class, 'showString1']);
+    Route::get('second2', [SecondController::class, 'showString2']);
+    Route::get('second3', [SecondController::class, 'showString3']);
+    Route::get('second4', [SecondController::class, 'showString4'])->middleware('auth');
+
+});
+///////////////////////////////////////////Middleware//////////////////////////////////////////
+
+
+Route::get('login', function () {
+    return 'must be login ';
+})->name('login');
